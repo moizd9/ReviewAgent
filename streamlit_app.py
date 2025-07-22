@@ -65,17 +65,6 @@ Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful
 
 
 
-
-# ------------FOOTER---------
-
-st.markdown("""
-<footer>
-    <strong>Developed by Moiz Deshmukh</strong> | <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a><br><br>
-    Curious how this AI Agent was built? <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
-</footer>
-""", unsafe_allow_html=True)
-
-
 # ========================= Dual Mode Input =========================
 
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
@@ -108,3 +97,13 @@ elif mode == "Upload CSV":
                 st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
 
 st.markdown("</div>", unsafe_allow_html=True)
+
+
+# ------------FOOTER---------
+
+st.markdown("""
+<footer>
+    <strong>Developed by Moiz Deshmukh</strong> | <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a><br><br>
+    Curious how this AI Agent was built? <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
+</footer>
+""", unsafe_allow_html=True)
