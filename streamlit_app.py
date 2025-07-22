@@ -113,12 +113,15 @@ if mode == "Single Business":
             st.warning("🚫 You've reached your usage limit for this session.")
     elif query.strip():
         st.session_state["usage_count"] += 1
-        with st.spinner("Fetching and writing replies..."):
-            df = process_single_business(query)
-            st.success(f"✅ Reply Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
-            st.write(df)
+        with st.spinner("⏳ Fetching and writing replies..."):
+            try:
+                df = process_single_business(query)
+                st.success(f"✅ Reply Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
+                st.write(df)
+            except Exception as e:
+                st.error(f"❌ Something went wrong: {e}")
     else:
-        st.warning("Please enter a business name.")
+        st.warning("⚠️ Please enter a business name.")
 
 else:
     uploaded_file = st.file_uploader("Upload CSV with business names", type=["csv"])
