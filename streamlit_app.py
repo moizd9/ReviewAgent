@@ -86,7 +86,9 @@ if mode == "Single Business":
         elif query.strip():
             with st.spinner("⏳ Generating replies..."):
                 try:
-                    df = process_single_business(query)
+                    response_text = process_single_business(query)
+                    df = pd.DataFrame([{"Review Reply": response_text}])
+                    
                     st.session_state.quota_used += 1
 
                     st.success("✅ Reply Generated!")
