@@ -73,7 +73,13 @@ footer {
 st.markdown("<div class='section'>", unsafe_allow_html=True)
 
 # ---------- Hero Section ----------
-st.markdown("<div class='big-title'>📝 ReviewAgent - AI Bulk Review Reply Generator</div>", unsafe_allow_html=True)
+st.markdown("""
+<div class='big-title'>
+    📝 ReviewAgent<br>
+    AI Bulk Review Reply Generator
+</div>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 <div class='subtext'>
 Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
