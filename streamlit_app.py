@@ -3,6 +3,15 @@ import pandas as pd
 import os
 import sys
 
+# Define the quota per session (e.g., 5 allowed uses)
+USAGE_QUOTA = 2
+
+# Initialize session usage counter
+if "usage_count" not in st.session_state:
+    st.session_state["usage_count"] = 0
+
+
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from reviewagentbot import process_single_business, process_csv
 
@@ -100,13 +109,17 @@ mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 if mode == "Single Business":
     query = st.text_input("Enter Business Name (e.g., Dunkin Donuts Times Square)", placeholder="write here...")
     if st.button("Generate Reply"):
-        if query.strip():
-            with st.spinner("Fetching and writing replies..."):
-                df = process_single_business(query)
-                st.success("Reply Generated ✅")
-                st.write(df)
-        else:
-            st.warning("Please enter a business name.")
+        if st.session_state["usage_count"] >= USAGE_QUOTA:
+            st.warning("🚫 You've reached your usage limit for this session.")
+    elif query.strip():
+        st.session_state["usage_count"] += 1
+        with st.spinner("Fetching and writing replies..."):
+            df = process_single_business(query)
+            st.success(f"✅ Reply Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
+            st.write(df)
+    else:
+        st.warning("Please enter a business name.")
+
 else:
     uploaded_file = st.file_uploader("Upload CSV with business names", type=["csv"])
     if uploaded_file is not None:
@@ -114,14 +127,21 @@ else:
         st.dataframe(df.head())
 
         if st.button("Generate Replies for All"):
-            with st.spinner("Processing all businesses..."):
-                response_df = process_csv(df)
-                st.success("Replies Generated ✅")
-                st.write(response_df)
+            if st.session_state["usage_count"] >= USAGE_QUOTA:
+                st.warning("🚫 You've reached your usage limit for this session.")
+    elif uploaded_file is not None:
+        st.session_state["usage_count"] += 1
+        with st.spinner("Processing all businesses..."):
+            response_df = process_csv(df)
+            st.success(f"✅ Replies Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
+            st.write(response_df)
 
-                # Download CSV
-                csv = response_df.to_csv(index=False).encode('utf-8')
-                st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
+        # CSV download
+        csv = response_df.to_csv(index=False).encode('utf-8')
+        st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
+    else:
+        st.warning("Please upload a CSV file.")
+
 
 # ========== Footer ==========
 st.markdown("""
