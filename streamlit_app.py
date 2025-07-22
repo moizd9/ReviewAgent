@@ -86,15 +86,19 @@ if mode == "Single Business":
         elif query.strip():
             with st.spinner("⏳ Generating replies..."):
                 try:
-                    response_text = process_single_business(query)
-                    df = pd.DataFrame([{"Review Reply": response_text}])
-                    
+                    df = process_single_business(query)
+
                     st.session_state.quota_used += 1
 
                     st.success("✅ Reply Generated!")
                     st.markdown(f"<p>Processed single business: <strong>{query}</strong></p>", unsafe_allow_html=True)
 
                     # Display table preview
+                    st.dataframe(df)
+                    
+                if df.empty:
+                    st.warning("⚠️ No data was returned. Please try a different business name.")
+                else:
                     st.dataframe(df)
 
                     # Allow CSV download

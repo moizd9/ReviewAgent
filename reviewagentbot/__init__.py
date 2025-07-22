@@ -104,14 +104,33 @@ Write a brief reply (2–3 sentences max) that:
 # Adding new functions here
 #-----
 
-def process_single_business(query: str) -> str:
-    # Your actual logic here
-    return f"Processed single business: {query}"
+def process_single_business(query: str) -> pd.DataFrame:
+    """
+    Fetches reviews for a business, generates responses, and returns as DataFrame.
+    """
+    place_id = lookup_place_id(query)
+    if not place_id:
+        return pd.DataFrame([{"Review Reply": "❌ Could not resolve business name."}])
 
-def process_csv(df: pd.DataFrame) -> pd.DataFrame:
-    # Your actual logic here
-    df["Response"] = "Dummy response for all rows"
-    return df
+    reviews = fetch_reviews_by_place_id(place_id, num=5)  # You can adjust the number
+    if not reviews:
+        return pd.DataFrame([{"Review Reply": "⚠️ No reviews found."}])
+
+    response_data = []
+    for r in reviews:
+        review_text = r.get("snippet", "") or r.get("text", "")
+        rating = r.get("rating", "")
+        date = r.get("date", "")
+        reply = generate_response(review_text, rating)
+        response_data.append({
+            "Review": review_text,
+            "Rating": rating,
+            "Date": date,
+            "Reply": reply
+        })
+
+    return pd.DataFrame(response_data)
+
 
 
 # --------------------------------------------------------------------
