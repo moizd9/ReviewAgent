@@ -76,7 +76,7 @@ st.markdown("<div class='section'>", unsafe_allow_html=True)
 st.markdown("""
 <div class='big-title'>
     📝 ReviewAgent<br>
-    AI-Powered Bulk Reviews Reply Generator
+    AI-Powered Reviews Reply Generator
 </div>
 """, unsafe_allow_html=True)
 
