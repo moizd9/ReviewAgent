@@ -110,11 +110,11 @@ def process_single_business(query: str) -> pd.DataFrame:
     """
     place_id = lookup_place_id(query)
     if not place_id:
-        return pd.DataFrame([{"Review Reply": "❌ Could not resolve business name."}])
+        return pd.DataFrame([{"Review": "", "Rating": "", "Date": "", "Reply": "❌ Could not resolve business name."}])
 
-    reviews = fetch_reviews_by_place_id(place_id, num=5)  # You can adjust the number
+    reviews = fetch_reviews_by_place_id(place_id, num=5)
     if not reviews:
-        return pd.DataFrame([{"Review Reply": "⚠️ No reviews found."}])
+        return pd.DataFrame([{"Review": "", "Rating": "", "Date": "", "Reply": "⚠️ No reviews found."}])
 
     response_data = []
     for r in reviews:
@@ -122,6 +122,7 @@ def process_single_business(query: str) -> pd.DataFrame:
         rating = r.get("rating", "")
         date = r.get("date", "")
         reply = generate_response(review_text, rating)
+
         response_data.append({
             "Review": review_text,
             "Rating": rating,
@@ -130,6 +131,7 @@ def process_single_business(query: str) -> pd.DataFrame:
         })
 
     return pd.DataFrame(response_data)
+
 
 
 
