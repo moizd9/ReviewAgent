@@ -99,6 +99,21 @@ Write a brief reply (2–3 sentences max) that:
     )
     return resp.choices[0].message.content.strip()
 
+
+#-----
+# Adding new functions here
+#-----
+
+def process_single_business(query: str) -> str:
+    # Your actual logic here
+    return f"Processed single business: {query}"
+
+def process_csv(df: pd.DataFrame) -> pd.DataFrame:
+    # Your actual logic here
+    df["Response"] = "Dummy response for all rows"
+    return df
+
+
 # --------------------------------------------------------------------
 # 4) Orchestrate: search → fetch reviews → respond → export to CSV
 # --------------------------------------------------------------------

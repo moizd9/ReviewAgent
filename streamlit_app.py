@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from reviewagentbot import process_single_business, process_csv
 
+
 # Inject custom CSS for styling
 st.markdown("""
     <style>
@@ -67,7 +68,7 @@ if mode == "Single Business":
     if st.button("Generate Reply"):
         if query.strip():
             with st.spinner("Fetching and writing replies..."):
-                df = process_single_business(query)
+                df = (query)
                 st.success("Reply Generated ✅")
                 st.write(df)
         else:
