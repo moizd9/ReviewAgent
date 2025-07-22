@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
-from reviewagentbot import process_single_business, process_csv
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from reviewagentbot import process_single_business, process_csv
 
 # Inject custom CSS for styling
 st.markdown("""
