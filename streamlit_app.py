@@ -10,7 +10,7 @@ from reviewagentbot import process_single_business, process_csv
 st.markdown("""
 <style>
 html, body, [data-testid="stAppViewContainer"] {
-    background-color: #b5daff;
+    background-color: #ffdfdb;
 }
 
 .big-title {
@@ -126,7 +126,7 @@ else:
 # ========== Footer ==========
 st.markdown("""
 <hr style="border: 0.5px solid #ccc; margin-top: 3rem;" />
-<div style="text-align: center; font-size: 14px; background-color: #fff6e6; padding: 1rem;">
+<div style="text-align: center; font-size: 14px; background-color: #ffdfdb; padding: 1rem;">
     <strong>Developed by Moiz Deshmukh</strong> | 
     <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a><br>
     Curious how this AI Agent was built? <a href="https://link-to-blueprint" target="_blank">Read the full blueprint here</a>
