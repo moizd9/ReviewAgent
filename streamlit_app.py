@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .reviewagentbot import process_single_business, process_csv
+from reviewagentbot import process_single_business, process_csv
 
 # Inject custom CSS for styling
 st.markdown("""
