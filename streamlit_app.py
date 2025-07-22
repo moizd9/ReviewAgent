@@ -9,46 +9,50 @@ from reviewagentbot import process_single_business, process_csv
 
 # Inject custom CSS for styling
 st.markdown("""
-    <style>
-        body {
-            background-color: #fff6e6;
-        }
-        .big-title {
-            font-size: 2.4em;
-            font-weight: 800;
-            margin-bottom: 0.2em;
-        }
-        .subtext {
-            font-size: 1.1em;
-            color: #ff2e63;
-            margin-bottom: 1.2em;
-        }
-        .feature-list {
-            font-size: 1.05em;
-            line-height: 1.6;
-        }
-        .mode-label {
-            font-weight: 600;
-            margin-top: 1.5em;
-        }
-        .section {
-            background-color: #fff9ed;
-            padding: 2em;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        }
-    </style>
+<style>
+    html, body, [data-testid="stAppViewContainer"] {
+        background-color: #b5daff;
+    }
+    .big-title {
+        font-size: 2.4em;
+        font-weight: 800;
+        margin-bottom: 0.2em;
+    }
+    .subtext {
+        font-size: 1.1em;
+        color: #ff2e63;
+        margin-bottom: 1.2em;
+    }
+    .feature-list {
+        font-size: 1.05em;
+        line-height: 1.6;
+    }
+    .mode-label {
+        font-weight: 600;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+    }
+    footer {
+        background-color: #fff6e6;
+        padding: 1.5rem;
+        margin-top: 4rem;
+        border-top: 2px solid #ddd;
+        font-size: 1em;
+        text-align: center;
+    }
+</style>
 """, unsafe_allow_html=True)
+
 
 # ========================= UI Layout =========================
 
 st.markdown("<div class='section'>", unsafe_allow_html=True)
 
 # Hero Section
-st.markdown("<div class='big-title'>🤖 ReviewAgent - AI Review Reply Generator</div>", unsafe_allow_html=True)
+st.markdown("<div class='big-title'>🤖 ReviewAgent - AI-Powered Bulk Review Reply Generator</div>", unsafe_allow_html=True)
 st.markdown("""
 <div class='subtext'>
-Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews.
+Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
 </div>
 
 <div class='feature-list'>
@@ -59,12 +63,25 @@ Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful
 </div>
 """, unsafe_allow_html=True)
 
+
+
+
+# ------------FOOTER---------
+
+st.markdown("""
+<footer>
+    <strong>Developed by Moiz Deshmukh</strong> | <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a><br><br>
+    Curious how this AI Agent was built? <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
+</footer>
+""", unsafe_allow_html=True)
+
+
 # ========================= Dual Mode Input =========================
 
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
 if mode == "Single Business":
-    query = st.text_input("Enter Business Name (e.g., Keventers Dubai)")
+    query = st.text_input("Enter Business Name (e.g., Starbucks Time Square NYC)")
     if st.button("Generate Reply"):
         if query.strip():
             with st.spinner("Fetching and writing replies..."):
