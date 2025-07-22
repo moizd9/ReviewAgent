@@ -87,13 +87,23 @@ if mode == "Single Business":
             with st.spinner("⏳ Generating replies..."):
                 try:
                     df = process_single_business(query)
-                    st.write(df)
-                    st.success("✅ Reply Generated!")
                     st.session_state.quota_used += 1
+
+                    st.success("✅ Reply Generated!")
+                    st.markdown(f"<p>Processed single business: <strong>{query}</strong></p>", unsafe_allow_html=True)
+
+                    # Display table preview
+                    st.dataframe(df)
+
+                    # Allow CSV download
+                    csv = df.to_csv(index=False).encode('utf-8')
+                    st.download_button("📥 Download Reply CSV", csv, f"{query.replace(' ', '_').lower()}_reply.csv", "text/csv")
+
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
         else:
             st.warning("⚠️ Please enter a business name.")
+
 
 # ------------------- Upload CSV -------------------
 elif mode == "Upload CSV":
