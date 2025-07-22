@@ -3,155 +3,134 @@ import pandas as pd
 import os
 import sys
 
-# Define the quota per session (e.g., 5 allowed uses)
-USAGE_QUOTA = 2
-
-# Initialize session usage counter
-if "usage_count" not in st.session_state:
-    st.session_state["usage_count"] = 0
-
-
-
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from reviewagentbot import process_single_business, process_csv
 
-# Custom CSS
+# ------------------- Session State for Quota -------------------
+if "quota_used" not in st.session_state:
+    st.session_state.quota_used = 0
+
+MAX_QUOTA = 2  # Max allowed generations per session
+
+# ------------------- CSS Styling -------------------
 st.markdown("""
 <style>
 html, body, [data-testid="stAppViewContainer"] {
     background-color: #ffdfdb;
 }
-
 .big-title {
     font-size: 2.4em;
     font-weight: 800;
     margin-bottom: 0.2em;
 }
-
 .subtext {
     font-size: 1.1em;
     color: #ff2e63;
     margin-bottom: 1.2em;
 }
-
 .feature-list {
     font-size: 1.05em;
     line-height: 1.6;
 }
-
-.mode-label {
-    font-weight: 600;
-    margin-top: 1.5em;
-    font-size: 1.1em;
-}
-
-input::placeholder {
-    color: #888 !important;  /* light grey placeholder */
-}
-
-/* Red Primary Button Styling */
-div.stButton > button:first-child {
-    background-color: #f04b4b;
-    color: white;
-    font-weight: 600;
-    border-radius: 5px;
-    padding: 0.5em 1.5em;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-div.stButton > button:first-child:hover {
-    background-color: #ff1c1c;
-    color: white;
-}
-
-/* Footer */
 footer {
-    background-color: #fff6e6;
-    padding: 1.5rem;
+    background-color: #f6f6f6;
+    padding: 1rem;
     margin-top: 4rem;
     border-top: 2px solid #ddd;
     font-size: 1em;
     text-align: center;
 }
+div.stButton > button:first-child {
+    background-color: #f75d5d;
+    color: white;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 0.5em 1.5em;
+}
+div.stButton > button:first-child:hover {
+    background-color: #ff1c1c;
+    color: white;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ========== UI Layout ==========
+# ------------------- Title Section -------------------
+st.markdown("<div class='big-title'>📝 ReviewAgent</div>", unsafe_allow_html=True)
+st.markdown("<div class='big-title'>AI-Powered Review Reply Generator</div>", unsafe_allow_html=True)
 
-st.markdown("<div class='section'>", unsafe_allow_html=True)
-
-# ---------- Hero Section ----------
+# ------------------- Description -------------------
 st.markdown("""
-<div class='big-title'>
-    📝 ReviewAgent<br>
-    AI-Powered Review Reply Generator
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class='subtext'>
-Handle Google reviews smartly.<br> 
+<div class="subtext">
+Handle Google reviews smartly.<br>
 This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
 </div>
-
-<div class='feature-list'>
+<div class="feature-list">
 ✅ Personalized review replies using latest GPT-4o engine<br>
 ✅ Works with a single query or bulk upload via CSV<br>
 ✅ Saves hours of manual response effort<br>
-✅ Ideal for marketers, agencies, and reputation teams<br>
+✅ Ideal for marketers, agencies, and reputation teams
 </div>
 """, unsafe_allow_html=True)
 
-# ---------- Input Mode ----------
+# ------------------- Mode Selection -------------------
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
+# ------------------- Single Business -------------------
 if mode == "Single Business":
-    query = st.text_input("Enter Business Name (e.g., Dunkin Donuts Times Square)", placeholder="write here...")
-    if st.button("Generate Reply"):
-        if st.session_state["usage_count"] >= USAGE_QUOTA:
-            st.warning("🚫 You've reached your usage limit for this session.")
-    elif query.strip():
-        st.session_state["usage_count"] += 1
-        with st.spinner("⏳ Fetching and writing replies..."):
-            try:
-                df = process_single_business(query)
-                st.success(f"✅ Reply Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
-                st.write(df)
-            except Exception as e:
-                st.error(f"❌ Something went wrong: {e}")
-    else:
-        st.warning("⚠️ Please enter a business name.")
+    query = st.text_input("Enter Business Name (e.g., Starbucks Allston)", placeholder="Write here...")
 
-else:
+    if st.button("Generate Reply"):
+        if st.session_state.quota_used >= MAX_QUOTA:
+            st.error("⛔ You’ve reached the maximum usage limit for this session.")
+        elif query.strip():
+            with st.spinner("⏳ Generating replies..."):
+                try:
+                    df = process_single_business(query)
+                    st.write(df)
+                    st.success("✅ Reply Generated!")
+                    st.session_state.quota_used += 1
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+        else:
+            st.warning("⚠️ Please enter a business name.")
+
+# ------------------- Upload CSV -------------------
+elif mode == "Upload CSV":
     uploaded_file = st.file_uploader("Upload CSV with business names", type=["csv"])
+    
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
         st.dataframe(df.head())
 
         if st.button("Generate Replies for All"):
-            if st.session_state["usage_count"] >= USAGE_QUOTA:
-                st.warning("🚫 You've reached your usage limit for this session.")
-    elif uploaded_file is not None:
-        st.session_state["usage_count"] += 1
-        with st.spinner("Processing all businesses..."):
-            response_df = process_csv(df)
-            st.success(f"✅ Replies Generated ({st.session_state['usage_count']}/{USAGE_QUOTA} used)")
-            st.write(response_df)
+            if st.session_state.quota_used >= MAX_QUOTA:
+                st.error("⛔ You’ve reached the maximum usage limit for this session.")
+            else:
+                with st.spinner("⏳ Processing all businesses..."):
+                    try:
+                        response_df = process_csv(df)
+                        st.write(response_df)
+                        st.success("✅ Replies Generated!")
+                        st.session_state.quota_used += 1
 
-        # CSV download
-        csv = response_df.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
-    else:
-        st.warning("Please upload a CSV file.")
+                        # Download CSV
+                        csv = response_df.to_csv(index=False).encode('utf-8')
+                        st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
+                    except Exception as e:
+                        st.error(f"❌ Error: {str(e)}")
 
+# ------------------- Quota Tracker -------------------
+st.markdown(f"<p style='text-align:center;font-size:13px;color:#555;'>Remaining Quota: {MAX_QUOTA - st.session_state.quota_used} / {MAX_QUOTA}</p>", unsafe_allow_html=True)
 
-# ========== Footer ==========
+# ------------------- Footer -------------------
 st.markdown("""
-<hr style="border: 0.5px solid #ccc; margin-top: 3rem;" />
+<hr style="border: 0.5px solid #ccc; margin-top: 3rem;"/>
+
 <div style="text-align: center; font-size: 14px; background-color: #ffdfdb; padding: 1rem;">
-    <strong>Developed by Moiz Deshmukh</strong> | 
+    <strong>Developed by Moiz Deshmukh</strong> |
     <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a><br>
-    Curious how this AI Agent was built? <a href="https://link-to-blueprint" target="_blank">Read the full blueprint here</a>
+    Curious how this AI Agent was built?
+    <a href="https://link-to-blueprint" target="_blank">Read the full blueprint here</a>
 </div>
 """, unsafe_allow_html=True)
