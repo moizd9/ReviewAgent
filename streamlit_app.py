@@ -82,7 +82,8 @@ st.markdown("""
 
 st.markdown("""
 <div class='subtext'>
-Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
+Handle Google reviews smartly.<br> 
+This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
 </div>
 
 <div class='feature-list'>
