@@ -98,7 +98,7 @@ This AI agent helps you craft instant, thoughtful replies to your business revie
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
 if mode == "Single Business":
-    query = st.text_input("Enter Business Name (e.g., Starbucks Time Square NYC)", placeholder="write here...")
+    query = st.text_input("Enter Business Name (e.g., Dunkin Donuts Times Square)", placeholder="write here...")
     if st.button("Generate Reply"):
         if query.strip():
             with st.spinner("Fetching and writing replies..."):
