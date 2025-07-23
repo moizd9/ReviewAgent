@@ -1,20 +1,31 @@
+import json
 import os
 import pandas as pd
 from serpapi import GoogleSearch
 from openai import OpenAI
+import streamlit as st
 
-# Load API keys from environment (or hardcode only for dev/test)
-SERPAPI_KEY = os.getenv("SERPAPI_KEY", "your-serpapi-key-here")
-OPENAI_KEY = os.getenv("OPENAI_KEY", "your-openai-key-here")
+# Load API keys
+with open("client_secret.json") as f:
+    secrets = json.load(f)
 
+SERPAPI_KEY = secrets.get("SERPAPI_API_KEY")
+OPENAI_KEY = secrets.get("OPENAI_API_KEY")
+
+# ✅ Set SerpAPI Key (this was missing)
+GoogleSearch.SERP_API_KEY = SERPAPI_KEY
+
+# Set OpenAI Client
 client = OpenAI(api_key=OPENAI_KEY)
+
+
 
 # --------------------------------------------------------------------
 # 1) Lookup place_id from a business name using Google Maps via SerpAPI
 # --------------------------------------------------------------------
 def lookup_place_id(query: str) -> str:
-    print(f"🔎 Searching for business: '{query}'...")
-    
+    print(f"🔍 Searching for business: '{query}'...")
+
     params = {
         "engine": "google_maps",
         "q": query,
@@ -25,16 +36,27 @@ def lookup_place_id(query: str) -> str:
 
     search = GoogleSearch(params)
     results = search.get_dict()
-    
+
+    print("🌐 Raw response from SerpAPI:")
+    print(json.dumps(results, indent=2))  # helpful for debugging
+
     local_results = results.get("local_results", [])
     if not local_results:
-        print("⚠️ No local search results returned from SerpAPI.")
+        print("⚠️ No local results found.")
         return None
 
-    pid = local_results[0].get("place_id")
-    title = local_results[0].get("title")
+    # Try getting the first one, but fallback if needed
+    first_result = local_results[0]
+    pid = first_result.get("place_id")
+    title = first_result.get("title", "Unknown")
+    
+    if not pid:
+        print("❌ No place_id found in the first local result.")
+        return None
+
     print(f"✅ Found place: {title} (place_id: {pid})")
     return pid
+
 
 # --------------------------------------------------------------------
 # 2) Fetch reviews using the resolved place_id
@@ -91,8 +113,10 @@ Write a brief reply (2–3 sentences max) that:
 # --------------------------------------------------------------------
 def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max_reviews: int = 10):
     place_id = lookup_place_id(business_query)
+
     if not place_id:
-        print("❌ Could not resolve business. Exiting.")
+        print("🧠 Tip: Try simplifying the business name, like just 'Starbucks Kenmore'")
+        print(f"❌ Could not resolve business: '{business_query}'. Please try a more specific name.")
         return
 
     reviews = fetch_reviews_by_place_id(place_id, num=max_reviews)
@@ -105,8 +129,8 @@ def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max
         text = r.get("snippet", "") or r.get("text", "")
         rating = r.get("rating", "")
         date = r.get("date", "")
+
         print(f"🧠 Processing review {idx}/{len(reviews)}: {text[:60]}...")
-        
         ai_reply = generate_response(text, rating=rating)
 
         rows.append({
@@ -123,8 +147,9 @@ def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max
     df.to_csv(out_csv, index=False)
     print(f"\n✅ Saved {len(df)} rows to '{out_csv}'")
 
+
 # --------------------------------------------------------------------
 # MAIN RUN
 # --------------------------------------------------------------------
-if __name__ == "__main__":
-    run_agent("Starbucks Kenmore Boston MA", max_reviews=5)
+# if __name__ == "__main__":
+#     run_agent("Starbucks Kenmore Boston MA", max_reviews=5)
