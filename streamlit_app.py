@@ -90,19 +90,20 @@ if st.button("Generate AI Responses"):
 
 # Footer
 st.markdown("""
-<div style='background-color: #ffdbdb; padding: 2rem 1rem 3rem 1rem;'>
-    <div style='max-width: 700px; margin: 0 auto; text-align: center; font-size: 14px;'>
-        <hr style='border: 0.5px solid #aaa; margin-bottom: 1rem;' />
-        <p>
+<div style="background-color: #ffdbdb; padding-top: 2rem; padding-bottom: 2rem;">
+    <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+        <hr style="border: 0.5px solid #aaa; margin-bottom: 1rem;" />
+        <p style="margin: 0;">
             Developed by <strong>Moiz Deshmukh</strong> |
             <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a>
         </p>
-        <p>
+        <p style="margin-top: 0.5rem;">
             Curious how this AI Agent was built?
             <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
         </p>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 
