@@ -117,29 +117,36 @@ if mode == "Single Business":
 
 
 # ------------------- Upload CSV -------------------
-elif mode == "Upload CSV":
-    uploaded_file = st.file_uploader("Upload CSV with business names", type=["csv"])
-    
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        st.dataframe(df.head())
 
-        if st.button("Generate Replies for All"):
-            if st.session_state.quota_used >= MAX_QUOTA:
-                st.error("⛔ You’ve reached the maximum usage limit for this session.")
+uploaded_file = st.file_uploader("Upload your CSV file with Business Reviews", type=["csv"])
+
+# Input box (for single business)
+single_input = st.text_area("Or enter a single review manually", placeholder="Write here...")
+
+# Spinner + response container
+if st.button("Generate Reply", type="primary"):
+    with st.spinner("Generating replies..."):
+        try:
+            if uploaded_file is not None:
+                df = pd.read_csv(uploaded_file)
+                processed_df = process_csv(df)
+                st.success("Replies generated successfully!")
+
+                # Show preview
+                st.dataframe(processed_df)
+
+                # Allow download
+                csv = processed_df.to_csv(index=False).encode("utf-8")
+                st.download_button("Download Replies CSV", csv, "generated_replies.csv", "text/csv")
+            elif single_input.strip():
+                single_response = process_single_business(single_input)
+                st.success("Reply generated successfully!")
+                st.write(single_response)
             else:
-                with st.spinner("⏳ Processing all businesses..."):
-                    try:
-                        response_df = process_csv(df)
-                        st.write(response_df)
-                        st.success("✅ Replies Generated!")
-                        st.session_state.quota_used += 1
+                st.warning("Please upload a CSV or enter a review.")
+        except Exception as e:
+            st.error(f"Something went wrong: {e}")
 
-                        # Download CSV
-                        csv = response_df.to_csv(index=False).encode('utf-8')
-                        st.download_button("📥 Download Replies CSV", csv, "ai_review_responses.csv", "text/csv")
-                    except Exception as e:
-                        st.error(f"❌ Error: {str(e)}")
 
 # ------------------- Quota Tracker -------------------
 st.markdown(f"<p style='text-align:center;font-size:13px;color:#555;'>Remaining Quota: {MAX_QUOTA - st.session_state.quota_used} / {MAX_QUOTA}</p>", unsafe_allow_html=True)
