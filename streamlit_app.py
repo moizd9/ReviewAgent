@@ -78,44 +78,42 @@ mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
 # --------------- Single Business ----------------
 if mode == "Single Business":
-    query = st.text_input("Enter Business Name (e.g., Dunkin Donuts Times Square)", placeholder="Write here...")
+    review_text = st.text_area("Paste Customer Review", placeholder="e.g., The staff was rude and my coffee was cold...")
 
     if "quota_used" not in st.session_state:
         st.session_state.quota_used = 0
 
     if st.button("Generate Reply"):
         if st.session_state.quota_used >= MAX_QUOTA:
-            st.error("❗You've reached the maximum usage limit for this session.")
-        elif query.strip():
-            with st.spinner("⚙️ Generating replies..."):
+            st.error("🚫 You've reached the maximum usage limit for this session.")
+        elif review_text.strip():
+            with st.spinner("💬 Generating reply..."):
                 try:
-                    reply = process_single_business(query)
+                    reply = process_single_business(review_text)
                     st.session_state.quota_used += 1
                     st.success("✅ Reply Generated!")
-                    st.markdown(f"<p>Processed single business: <strong>{query}</strong></p>", unsafe_allow_html=True)
 
-                    # Build a dataframe
+                    # Build result DataFrame
                     df = pd.DataFrame([{
-                        "Business Name": query,
-                        "Review Reply": reply
+                        "Review": review_text,
+                        "AI Response": reply
                     }])
 
-                    # Show result
+                    st.markdown("### ✍️ Generated Reply Below:")
                     st.dataframe(df)
 
-                    # Allow CSV download
+                    # CSV download
                     csv = df.to_csv(index=False).encode('utf-8')
                     st.download_button(
-                        "📥 Download Reply CSV",
+                        "⬇️ Download Reply CSV",
                         csv,
-                        f"{query.replace('.', '_').replace(' ', '_').lower()}_reply.csv",
+                        "single_review_reply.csv",
                         "text/csv"
                     )
-
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
         else:
-            st.warning("⚠️ Please enter a business name.")
+            st.warning("⚠️ Please enter a customer review to proceed.")
 
 
 
