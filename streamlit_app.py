@@ -90,15 +90,19 @@ if st.button("Generate AI Responses"):
 
 # Footer
 st.markdown("""
-<div class="footer">
-    <p style="text-align: center;">
-        Developed by <strong>Moiz Deshmukh</strong> |
-        <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a>
-    </p>
-    <p style="text-align: center;">
-        Curious how this AI Agent was built?
-        <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
-    </p>
+<div style='background-color: #ffdbdb; padding: 2rem 1rem 3rem 1rem;'>
+    <div style='max-width: 700px; margin: 0 auto; text-align: center; font-size: 14px;'>
+        <hr style='border: 0.5px solid #aaa; margin-bottom: 1rem;' />
+        <p>
+            Developed by <strong>Moiz Deshmukh</strong> |
+            <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a>
+        </p>
+        <p>
+            Curious how this AI Agent was built?
+            <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
+        </p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
+
 
