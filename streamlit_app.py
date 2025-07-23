@@ -6,15 +6,18 @@ st.set_page_config(page_title="ReviewAgent - AI Review Generator", page_icon="ü
 # Inject custom styles
 st.markdown("""
     <style>
-        body, .main {
+        html, body, [data-testid="stAppViewContainer"], .main {
             background-color: #ffdbdb;
         }
+
         h1, h2, h3, p, div, .stTextInput, .stSlider {
             text-align: left !important;
         }
+
         .stTextInput > div > input {
             border: 2px solid #ff4b4b;
         }
+
         .stButton > button {
             background-color: #ff4b4b;
             color: white;
@@ -22,6 +25,7 @@ st.markdown("""
             border-radius: 5px;
             padding: 0.5rem 1rem;
         }
+
         .footer {
             margin-top: 4rem;
             padding: 1.5rem;
@@ -30,6 +34,7 @@ st.markdown("""
             border-top: 1px solid #aaa;
             font-size: 14px;
         }
+
         .footer a {
             color: #0066cc;
             text-decoration: none;
@@ -38,13 +43,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header layout (split line with less spacing)
-st.markdown("""
-    <div style='margin-bottom: -10px'>
-        <h2>üìù ReviewAgent</h2>
-    </div>
-    <h2>AI-Powered Bulk Review Reply Generator</h2>
-""", unsafe_allow_html=True)
 
 # Subtitle split into 2 lines
 st.markdown(
