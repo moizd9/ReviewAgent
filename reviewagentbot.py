@@ -101,7 +101,7 @@ Write a brief reply (2–3 sentences max) that:
 - Addresses any concern or praise
 - Invites them back / next step
 - Uses a warm, human tone and do not sound like a robot.
-- Also end with Best Regards and the company's name.
+- End with Best Regards and the business' name for which you are the reputation manager.
 """
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
