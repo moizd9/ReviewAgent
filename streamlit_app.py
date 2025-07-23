@@ -1,45 +1,56 @@
 import streamlit as st
 from reviewagentbot import run_agent
 
-# Page config
 st.set_page_config(page_title="ReviewAgent - AI Review Generator", page_icon="📝", layout="centered")
 
-# Custom background color
+# Inject custom styles
 st.markdown("""
     <style>
-        .main {
-            background-color: #add8e6; /* light blue */
+        body, .main {
+            background-color: #ffdbdb;
         }
-        .stSlider > div {
-            color: black;
-        }
-        .stRadio > label > div {
-            font-weight: 600;
+        h1, h2, h3, p, div, .stTextInput, .stSlider {
+            text-align: left !important;
         }
         .stTextInput > div > input {
             border: 2px solid #ff4b4b;
         }
         .stButton > button {
+            background-color: #ff4b4b;
+            color: white;
             font-weight: bold;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+        }
+        .footer {
+            margin-top: 4rem;
+            padding: 1.5rem;
+            background-color: #ffdbdb;
+            text-align: center;
+            border-top: 1px solid #aaa;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# Header Title
-st.markdown(
-    "<h1 style='text-align: center;'>📝 ReviewAgent - AI-Powered Bulk<br>Review Reply Generator</h1>",
-    unsafe_allow_html=True
-)
+# Header layout (split line)
+st.markdown("## 📝 ReviewAgent")
+st.markdown("## AI-Powered Bulk Review Reply Generator")
 
 # Subtitle
 st.markdown(
-    "<p style='color:#ff4b4b; text-align: center; font-size: 16px;'>"
+    "<p style='color:#ff4b4b; font-size: 16px;'>"
     "Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!"
     "</p>",
     unsafe_allow_html=True
 )
 
-# Features with emojis
+# Features list
 st.markdown("""
 ✅ Personalized review replies using latest GPT-4o engine  
 ✅ Works with a single query (no CSV needed)  
@@ -63,3 +74,14 @@ if st.button("Generate AI Responses"):
             run_agent(business_query=query, max_reviews=max_reviews)
         st.success("✅ Done! AI responses saved to `ai_review_responses.csv`")
         st.download_button("📄 Download CSV", open("ai_review_responses.csv", "rb"), file_name="ai_review_responses.csv")
+
+# Footer
+st.markdown("""
+<div class="footer">
+    Developed by <strong>Moiz Deshmukh</strong> |
+    <a href="https://www.moizdeshmukh.com" target="_blank">www.moizdeshmukh.com</a>
+    <br><br>
+    Curious how this AI Agent was built? 
+    <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
+</div>
+""", unsafe_allow_html=True)
