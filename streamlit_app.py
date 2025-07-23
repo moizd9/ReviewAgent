@@ -38,16 +38,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header layout (split line)
-st.markdown("## 📝 ReviewAgent")
-st.markdown("## AI-Powered Bulk Review Reply Generator")
+# Header layout (split line with less spacing)
+st.markdown("""
+    <div style='margin-bottom: -10px'>
+        <h2>📝 ReviewAgent</h2>
+    </div>
+    <h2>AI-Powered Bulk Review Reply Generator</h2>
+""", unsafe_allow_html=True)
 
-# Subtitle
+# Subtitle split into 2 lines
 st.markdown(
-    "<p style='color:#ff4b4b; font-size: 16px;'>"
-    "Handle Google reviews smartly." <br>
-    "This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!"
-    "</p>",
+    """
+    <p style='color:#ff4b4b; font-size: 16px;'>
+        Handle Google reviews smartly.<br>
+        This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!
+    </p>
+    """,
     unsafe_allow_html=True
 )
 
