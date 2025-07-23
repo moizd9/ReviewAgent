@@ -45,7 +45,8 @@ st.markdown("## AI-Powered Bulk Review Reply Generator")
 # Subtitle
 st.markdown(
     "<p style='color:#ff4b4b; font-size: 16px;'>"
-    "Handle Google reviews smartly. This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!"
+    "Handle Google reviews smartly." <br>
+    "This AI agent helps you craft instant, thoughtful replies to your business reviews in bulk!"
     "</p>",
     unsafe_allow_html=True
 )
