@@ -62,11 +62,11 @@ def lookup_place_id(query: str) -> str:
 # --------------------------------------------------------------------
 def fetch_reviews_by_place_id(place_id: str, num: int = 10):
     params = {
-    "engine": "google_maps_reviews",
-    "place_id": place_id,
-    "hl": "en",
-    "api_key": SERPAPI_KEY
-}
+        "engine": "google_maps_reviews",
+        "place_id": place_id,
+        "hl": "en",
+        "api_key": SERPAPI_KEY
+    }
 
     search = GoogleSearch(params)
     results = search.get_dict()
@@ -74,9 +74,12 @@ def fetch_reviews_by_place_id(place_id: str, num: int = 10):
     state = results.get("search_information", {}).get("reviews_results_state")
     print(f"🔍 reviews_results_state: {state}")
 
-    reviews = results.get("reviews", [])
+    all_reviews = results.get("reviews", [])
+    reviews = all_reviews[:num]  # ✅ Limit based on slider input
+
     print(f"📦 Retrieved {len(reviews)} raw reviews.")
     return reviews
+
 
 # --------------------------------------------------------------------
 # 3) Generate an AI response to a review
