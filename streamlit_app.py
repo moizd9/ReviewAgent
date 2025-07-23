@@ -76,7 +76,7 @@ This AI agent helps you craft instant, thoughtful replies to your business revie
 # ------------------- Mode Selection -------------------
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
-# --------------- Single Business ----------------
+# ----------------- Single Business -----------------
 if mode == "Single Business":
     query = st.text_input("Enter Business Name (e.g., Starbucks Allston MA)", placeholder="Write here...")
 
@@ -85,33 +85,33 @@ if mode == "Single Business":
 
     if st.button("Generate Reply"):
         if st.session_state.quota_used >= MAX_QUOTA:
-            st.error("🚫 You've reached the maximum usage limit for this session.")
-        elif query.strip():
-            with st.spinner("🤖 Generating replies..."):
+            st.error("❗You've reached the maximum usage limit for this session.")
+        elif query.strip() == "":
+            st.warning("⚠️ Please enter a business name.")
+        else:
+            with st.spinner("🧠 Generating replies..."):
                 try:
-                    # Run your core business logic
-                    reply_df = process_single_business(query)  # <--- should return a DataFrame
+                    # Run core logic
+                    reply_df = process_single_business(query)
 
                     if not reply_df.empty:
                         st.session_state.quota_used += 1
-                        st.success("✅ Reply Generated!")
-                        st.markdown(f"<p>Processed single business: <strong>{query}</strong></p>", unsafe_allow_html=True)
+                        st.success("✅ Reply CSV Generated!")
                         st.dataframe(reply_df)
 
-                        # Download reply CSV
+                        # CSV download
                         csv = reply_df.to_csv(index=False).encode('utf-8')
                         st.download_button(
                             "⬇️ Download Reply CSV",
                             csv,
-                            f"{query.replace('.', '_').replace(' ', '_').lower()}_reply.csv",
+                            f"{query.lower().replace(' ', '_')}_replies.csv",
                             "text/csv"
                         )
                     else:
                         st.warning("⚠️ No reviews found or no reply was generated. Try a different business name.")
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
-        else:
-            st.warning("⚠️ Please enter a business name.")
+
 
 
 
