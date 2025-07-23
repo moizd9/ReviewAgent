@@ -73,11 +73,16 @@ def fetch_reviews_by_place_id(place_id: str, num: int = 10):
     try:
         search = GoogleSearch(params)
         results = search.get_dict()
+
+        if "error" in results:
+            raise ValueError(results["error"])
+
     except Exception as e:
         print("❌ Review fetching failed:", e)
-        st.error("🔧 App under maintenance. Please contact Moiz Deshmukh (deshmukhmoiz3@gmail.com).")
-        return []
+        st.error("🚧 App under maintenance. SerpAPI limit reached or an error occurred. Please try again later or contact Moiz Deshmukh (deshmukhmoiz3@gmail.com).")
+        st.stop()  # Stop Streamlit app execution immediately
 
+    # If no error, proceed
     state = results.get("search_information", {}).get("reviews_results_state")
     print(f"🔍 reviews_results_state: {state}")
 
@@ -85,6 +90,7 @@ def fetch_reviews_by_place_id(place_id: str, num: int = 10):
     reviews = all_reviews[:num]
     print(f"📦 Retrieved {len(reviews)} raw reviews.")
     return reviews
+
 
 
 
