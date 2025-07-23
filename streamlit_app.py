@@ -76,38 +76,42 @@ This AI agent helps you craft instant, thoughtful replies to your business revie
 # ------------------- Mode Selection -------------------
 mode = st.radio("Choose input mode", ["Single Business", "Upload CSV"])
 
-# ---------------- Single Business ----------------
+# --------------- Single Business ----------------
 if mode == "Single Business":
-    query = st.text_input("Enter Business Name (e.g., Starbucks Allston)", placeholder="Write here...")
+    query = st.text_input("Enter Business Name (e.g., Dunkin Donuts Times Square)", placeholder="Write here...")
 
     if "quota_used" not in st.session_state:
         st.session_state.quota_used = 0
 
     if st.button("Generate Reply"):
         if st.session_state.quota_used >= MAX_QUOTA:
-            st.error("🚫 You’ve reached the maximum usage limit for this session.")
+            st.error("❗You've reached the maximum usage limit for this session.")
         elif query.strip():
-            with st.spinner("🕵️ Generating replies..."):
+            with st.spinner("⚙️ Generating replies..."):
                 try:
-                    df = process_single_business(query)
+                    reply = process_single_business(query)
                     st.session_state.quota_used += 1
-
                     st.success("✅ Reply Generated!")
                     st.markdown(f"<p>Processed single business: <strong>{query}</strong></p>", unsafe_allow_html=True)
 
-                    if df.empty:
-                        st.warning("⚠️ No data was returned. Please try a different business name.")
-                    else:
-                        st.dataframe(df)
+                    # Build a dataframe
+                    df = pd.DataFrame([{
+                        "Business Name": query,
+                        "Review Reply": reply
+                    }])
 
-                        # Allow CSV download
-                        csv = df.to_csv(index=False).encode('utf-8')
-                        st.download_button(
-                            "📥 Download Reply CSV",
-                            csv,
-                            f"{query.replace('.', '_').replace(' ', '_').lower()}_reply.csv",
-                            "text/csv"
-                        )
+                    # Show result
+                    st.dataframe(df)
+
+                    # Allow CSV download
+                    csv = df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        "📥 Download Reply CSV",
+                        csv,
+                        f"{query.replace('.', '_').replace(' ', '_').lower()}_reply.csv",
+                        "text/csv"
+                    )
+
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
         else:
@@ -116,36 +120,43 @@ if mode == "Single Business":
 
 
 
-# ------------------- Upload CSV -------------------
 
-uploaded_file = st.file_uploader("Upload your CSV file with Business Reviews", type=["csv"])
+# --------------- Upload CSV ----------------
+elif mode == "Upload CSV":
+    uploaded_file = st.file_uploader("Upload your CSV file with Business Reviews", type=["csv"])
 
-# Input box (for single business)
-single_input = st.text_area("Or enter a single review manually", placeholder="Write here...")
-
-# Spinner + response container
-if st.button("Generate Reply", type="primary"):
-    with st.spinner("Generating replies..."):
+    if uploaded_file is not None:
         try:
-            if uploaded_file is not None:
-                df = pd.read_csv(uploaded_file)
-                processed_df = process_csv(df)
-                st.success("Replies generated successfully!")
+            df = pd.read_csv(uploaded_file)
 
-                # Show preview
-                st.dataframe(processed_df)
-
-                # Allow download
-                csv = processed_df.to_csv(index=False).encode("utf-8")
-                st.download_button("Download Replies CSV", csv, "generated_replies.csv", "text/csv")
-            elif single_input.strip():
-                single_response = process_single_business(single_input)
-                st.success("Reply generated successfully!")
-                st.write(single_response)
+            if "Business Name" not in df.columns:
+                st.error("❌ CSV must contain a 'Business Name' column.")
             else:
-                st.warning("Please upload a CSV or enter a review.")
+                with st.spinner("⚙️ Generating replies for all businesses..."):
+                    replies = []
+                    for name in df["Business Name"]:
+                        if pd.notna(name) and isinstance(name, str) and name.strip():
+                            reply = process_single_business(name.strip())
+                            replies.append(reply)
+                        else:
+                            replies.append("❌ Invalid or empty business name")
+
+                    df["AI Reply"] = replies
+                    st.success("✅ Replies generated for all businesses!")
+
+                    st.dataframe(df)
+
+                    csv = df.to_csv(index=False).encode("utf-8")
+                    st.download_button(
+                        "📥 Download Bulk Replies CSV",
+                        csv,
+                        "bulk_review_replies.csv",
+                        "text/csv"
+                    )
+
         except Exception as e:
-            st.error(f"Something went wrong: {e}")
+            st.error(f"❌ Error processing file: {str(e)}")
+
 
 
 # ------------------- Quota Tracker -------------------

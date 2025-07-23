@@ -1,23 +1,18 @@
 import openai
 import os
 
-def process_single_business(business_name):
-    try:
-        prompt = f"""You are an AI assistant. Write a professional, kind, and engaging reply to a Google review for the business: "{business_name}". 
-Make sure your reply sounds human, not robotic, and addresses customer concerns or compliments.
-The tone should reflect excellent customer service and make the customer feel valued."""
+def process_single_business(business_name: str) -> str:
+    import openai
 
-        response = openai.ChatCompletion.create(
+    try:
+        response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You help businesses write replies to customer reviews."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=250
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f"Write a professional, kind, and engaging reply to a Google review for the business: '{business_name}'"}
+            ]
         )
-
-        reply = response['choices'][0]['message']['content'].strip()
+        reply = response.choices[0].message.content.strip()
         return reply
 
     except Exception as e:
