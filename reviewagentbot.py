@@ -6,11 +6,10 @@ from openai import OpenAI
 import streamlit as st
 
 # Load API keys
-with open("client_secret.json") as f:
-    secrets = json.load(f)
+import streamlit as st
 
-SERPAPI_KEY = secrets.get("SERPAPI_API_KEY")
-OPENAI_KEY = secrets.get("OPENAI_API_KEY")
+SERPAPI_KEY = st.secrets["SERPAPI_API_KEY"]
+OPENAI_KEY = st.secrets["OPENAI_API_KEY"]
 
 # ✅ Set SerpAPI Key (this was missing)
 GoogleSearch.SERP_API_KEY = SERPAPI_KEY
