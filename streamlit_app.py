@@ -44,6 +44,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# Header layout (split line with less spacing)
+st.markdown("""
+    <div style='margin-bottom: -10px'>
+        <h2>📝 ReviewAgent</h2>
+    </div>
+    <h2>AI-Powered Bulk Review Reply Generator</h2>
+""", unsafe_allow_html=True)
+
 # Subtitle split into 2 lines
 st.markdown(
     """
