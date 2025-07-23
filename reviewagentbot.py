@@ -33,28 +33,30 @@ def lookup_place_id(query: str) -> str:
         "api_key": SERPAPI_KEY
     }
 
-    search = GoogleSearch(params)
-    results = search.get_dict()
-
-    print("🌐 Raw response from SerpAPI:")
-    print(json.dumps(results, indent=2))  # helpful for debugging
+    try:
+        search = GoogleSearch(params)
+        results = search.get_dict()
+    except Exception as e:
+        print("❌ SerpAPI call failed:", e)
+        st.error("🔧 App under maintenance. Please contact Moiz Deshmukh (deshmukhmoiz3@gmail.com).")
+        return None
 
     local_results = results.get("local_results", [])
     if not local_results:
         print("⚠️ No local results found.")
         return None
 
-    # Try getting the first one, but fallback if needed
     first_result = local_results[0]
     pid = first_result.get("place_id")
     title = first_result.get("title", "Unknown")
-    
+
     if not pid:
         print("❌ No place_id found in the first local result.")
         return None
 
     print(f"✅ Found place: {title} (place_id: {pid})")
     return pid
+
 
 
 # --------------------------------------------------------------------
@@ -68,17 +70,22 @@ def fetch_reviews_by_place_id(place_id: str, num: int = 10):
         "api_key": SERPAPI_KEY
     }
 
-    search = GoogleSearch(params)
-    results = search.get_dict()
+    try:
+        search = GoogleSearch(params)
+        results = search.get_dict()
+    except Exception as e:
+        print("❌ Review fetching failed:", e)
+        st.error("🔧 App under maintenance. Please contact Moiz Deshmukh (deshmukhmoiz3@gmail.com).")
+        return []
 
     state = results.get("search_information", {}).get("reviews_results_state")
     print(f"🔍 reviews_results_state: {state}")
 
     all_reviews = results.get("reviews", [])
-    reviews = all_reviews[:num]  # ✅ Limit based on slider input
-
+    reviews = all_reviews[:num]
     print(f"📦 Retrieved {len(reviews)} raw reviews.")
     return reviews
+
 
 
 # --------------------------------------------------------------------
@@ -87,9 +94,9 @@ def fetch_reviews_by_place_id(place_id: str, num: int = 10):
 def generate_response(review_text: str, rating=None):
     if not review_text.strip():
         return "(No review text provided.)"
-    
+
     rating_line = f"The customer gave a rating of {rating}." if rating else ""
-    
+
     prompt = f"""
 You are a courteous reputation manager for a local business.
 {rating_line}
@@ -103,28 +110,33 @@ Write a brief reply (2–3 sentences max) that:
 - Uses a warm, human tone and do not sound like a robot.
 - End with Best Regards and the business' name for which you are the reputation manager.
 """
-    resp = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=180,
-        temperature=0.5,
-    )
-    return resp.choices[0].message.content.strip()
+
+    try:
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=180,
+            temperature=0.5,
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        print("❌ OpenAI generation failed:", e)
+        return "⚠️ Unable to generate response due to maintenance. Please try again later."
+
 
 # --------------------------------------------------------------------
 # 4) Orchestrate: search → fetch reviews → respond → export to CSV
 # --------------------------------------------------------------------
 def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max_reviews: int = 10):
     place_id = lookup_place_id(business_query)
-
     if not place_id:
-        print("🧠 Tip: Try simplifying the business name, like just 'Starbucks Kenmore'")
-        print(f"❌ Could not resolve business: '{business_query}'. Please try a more specific name.")
+        print("❌ Could not resolve business:", business_query)
         return
 
     reviews = fetch_reviews_by_place_id(place_id, num=max_reviews)
     if not reviews:
         print("❌ No reviews returned from SerpAPI.")
+        st.error("🔧 App under maintenance. Please contact Moiz Deshmukh (deshmukhmoiz3@gmail.com).")
         return
 
     rows = []
@@ -133,7 +145,7 @@ def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max
         rating = r.get("rating", "")
         date = r.get("date", "")
 
-        print(f"🧠 Processing review {idx}/{len(reviews)}: {text[:60]}...")
+        print(f"📝 Processing review {idx}/{len(reviews)}: {text[:60]}...")
         ai_reply = generate_response(text, rating=rating)
 
         rows.append({
@@ -148,7 +160,8 @@ def run_agent(business_query: str, out_csv: str = "ai_review_responses.csv", max
     print(df.head())
 
     df.to_csv(out_csv, index=False)
-    print(f"\n✅ Saved {len(df)} rows to '{out_csv}'")
+    print(f"\n✅ Saved {len(df)} rows to: '{out_csv}'")
+
 
 
 # --------------------------------------------------------------------
