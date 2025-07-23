@@ -99,7 +99,7 @@ st.markdown("""
         </p>
         <p style="margin-top: 0.5rem;">
             Curious how this AI Agent was built?
-            <a href="https://www.moizdeshmukh.com/blueprint" target="_blank">Read the full blueprint here</a>
+            <a href="https://www.moizdeshmukh.com/post/reviewagent-my-ai-powered-review-reply-assistant-for-local-businesses" target="_blank">Read the full blueprint here</a>
         </p>
     </div>
 </div>
