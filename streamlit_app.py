@@ -5,7 +5,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from reviewagentbot import process_single_business, #process_csv
+from reviewagentbot import process_single_business #process_csv
 
 # ------------------- Session State for Quota -------------------
 if "quota_used" not in st.session_state:
