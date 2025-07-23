@@ -100,7 +100,8 @@ Write a brief reply (2–3 sentences max) that:
 - Thanks the reviewer by sentiment (no personal names unless present)
 - Addresses any concern or praise
 - Invites them back / next step
-- Uses a warm, human tone
+- Uses a warm, human tone and do not sound like a robot.
+- Also end with Best Regards and the company's name.
 """
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
